@@ -54,9 +54,10 @@ To run this project, you will need:
 
 Add screenshots here to give a visual representation of your app (replace with actual images):
 
-- ![Home Screen](path/to/home-screen.png)
-- ![Order Form](path/to/order-form.png)
-- ![Order History](path/to/order-history.png)
+<img width="402" alt="home_screen" src="https://github.com/user-attachments/assets/f69ae21b-f402-4170-9835-c3990be5924d">
+<img width="400" alt="order_history" src="https://github.com/user-attachments/assets/21fb3a92-159a-4711-bee9-45b44eaafb75">
+<img width="394" alt="order_form" src="https://github.com/user-attachments/assets/7984eebc-b3d3-41f1-98b5-97887606ac3e">
+<img width="400" alt="about_page" src="https://github.com/user-attachments/assets/0cbf8b1a-3362-450d-a53c-d34e0df97eca">
 
 ## Contributing
 
