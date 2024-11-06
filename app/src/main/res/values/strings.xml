@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name">Frank\'s Ice Cream Company</string>
+    <string name="about">About</string>
+    <string name="order_history">Order History</string>
+    <string name="back">Back</string>
+    <string name="fudge_amount_label">Select hot fudge amount:</string>
+    <string name="about_text_title">About Us</string>
+    <string name="about_text_body">Developed by Rosie Faulkner\n\nWelcome to Frank\'s Ice Cream Company, where we scoop, swirl, and scheme! We’re not your average ice cream shop – we’re more sinister, a tad twisted, and absolutely uncompromising when it comes to our secret ingredient: a delightfully devious poison that keeps things…exciting.\n\nOur mission is simple: to serve you a dessert you’ll never forget. Each creamy, mouth-watering bite carries a special touch guaranteed to keep your stomach in knots – and we mean that literally! Our poison is subtle. It\'s artfully blended into every flavor, from the [Devil\’s Double Fudge] Chocolate to the [Sinister] Strawberry. It’s just enough to add a little chaos to your day. Think of it as a bonus adventure, free of charge!\n\nAt Frank\'s, we believe every treat should leave a lasting impression. So, come for the ice cream… stay for the consequences. We promise you’ll be running back for more (and possibly to the nearest restroom). Indulge in our wicked concoctions, where every bite is a calculated risk – consume responsibly.\n\n</string>
+    <string-array name="flavor_names">
+        <item name="flavor_vanilla">Vanilla</item>
+        <item name="flavor_chocolate">Chocolate</item>
+        <item name="flavor_strawberry">Strawberry</item>
+    </string-array>
+    <string-array name="size_names">
+        <item name="small">Small</item>
+        <item name="medium">Medium</item>
+        <item name="large">Large</item>
+    </string-array>
+    <string name="description">Select your sundae size, flavor, hot fudge amount and toppings. All orders include whipped cream and a cherry on top.</string>
+    <string name="button_order">Order</string>
+    <string name="button_reset">Reset</string>
+    <string name="button_the_works">The works!</string>
+    <string name="progress_0oz">0 OZ</string>
+    <string name="progress_1oz">1 OZ</string>
+    <string name="progress_2oz">2 OZ</string>
+    <string name="progress_3oz">3 OZ</string>
+    <string name="oz"> OZ</string>
+    <string name="price_label">Price:&#160;</string>">
+    <string name="order_history_item_title">- Order #</string>
+    <string name="order_history_item_title_ending">&#160;-</string>
+    <string name="no_orders_found">No orders found</string>
+    <string name="order_successfully_placed">Order successfully placed.</string>
+    <string name="please_enter_a_size">Please enter a size</string>
+    <string name="please_enter_a_flavor">Please enter a flavor</string>
+    <string name="peanuts">Peanuts</string>
+    <string name="m_and_ms">M&amp;Ms</string>
+    <string name="almonds">Almonds</string>
+    <string name="brownie">Brownie</string>
+    <string name="strawberries">Strawberries</string>
+    <string name="oreos">Oreos</string>
+    <string name="gummy_bears">Gummy Bears</string>
+    <string name="marshmallows">Marshmallows</string>
+    <string name="date_label">Date:&#160;</string>
+    <string name="flavor_label">Flavor:&#160;</string>
+    <string name="size_label">Size:&#160;</string>
+    <string name="toppings_label">Toppings:&#160;</string>
+    <string name="fudge_label">Fudge:&#160;</string>
+</resources>

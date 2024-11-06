@@ -1,0 +1,24 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.sundae.ungainliness.MainActivity">
+
+    <item
+        android:id="@+id/order_history"
+        android:enabled="true"
+        android:title="@string/order_history"
+        android:textSize="24sp"
+        android:visible="true"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/about"
+        android:checkable="false"
+        android:checked="true"
+        android:enabled="true"
+        android:textSize="24sp"
+        android:iconTint="#FFFFFF"
+        android:iconTintMode="src_in"
+        android:title="@string/about"
+        android:visible="true"
+        app:showAsAction="never"/>
+</menu>
