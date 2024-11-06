@@ -2,6 +2,12 @@
 
 This project is an Android application built using Java and Android Studio. The Sundae Order App provides an intuitive and engaging interface for users to customize and order their perfect sundae. Users can select various options like size, flavor, fudge amount, and a wide range of toppings to create a personalized treat. The app also includes features to calculate the total price based on user selections, store orders in a database, and display order history.
 
+
+
+https://github.com/user-attachments/assets/30e01cee-363c-49e4-a39e-6b718889ba64
+
+
+
 ## Purpose
 
 The purpose of the Sundae Order App is to simulate a sundae ordering experience, complete with pricing calculations and user preferences. It aims to:
