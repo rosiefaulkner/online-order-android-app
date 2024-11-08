@@ -1,7 +1,6 @@
 package com.sundae.onlinesundaeshop;
 
-import static java.lang.String.*;
-
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -21,9 +20,6 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class MainActivity extends AppCompatActivity {
     SeekBar fudgeAmount;
     Spinner flavorDropdown, sizeDropdown;
@@ -33,42 +29,13 @@ public class MainActivity extends AppCompatActivity {
     Float total;
     private CheckBox[] toppings;
     private DBHandler dbHandler;
-    private Map<String, Float> sizePrices, toppingPrices, hotFudgePrices;
-    private String addAction = "add";
-    private String subtractAction = "subtract";
-    private String small = "small";
-    private String medium = "medium";
-    private String large = "large";
-    private String peanutsTopping = "peanuts";
-    private String mAndMsTopping = "m_and_ms";
-    private String almondsTopping = "almonds";
-    private String brownieTopping = "brownie";
-    private String strawberriesTopping = "strawberries";
-    private String oreosTopping = "oreos";
-    private String gummyBearsTopping = "gummy_bears";
-    private String marshmallowsTopping = "marshmallows";
-    private String zeroOunce = "0";
-    private String oneOunce = "1";
-    private String twoOunces = "2";
-    private String threeOunces = "3";
-    private Float peanutPrice = 0.15f;
-    private Float mAndMsPrice = 0.25f;
-    private Float almondsPrice = 0.15f;
-    private Float browniePrice = 0.20f;
-    private Float strawberriesPrice = 0.20f;
-    private Float oreosPrice = 0.20f;
-    private Float gummyBearsPrice = 0.20f;
-    private Float marshmallowsPrice = 0.15f;
-    private Float hotFudgePriceZeroOunce = 0.00f;
-    private Float hotFudgePriceOneOunce = 0.15f;
-    private Float hotFudgePriceTwoOunces = 0.25f;
-    private Float hotFudgePriceThreeOunces = 0.30f;
-    private Float smallPrice = 2.99f;
-    private Float mediumPrice = 3.99f;
-    private Float largePrice = 4.99f;
+    private final String addAction = "add";
+    private final String subtractAction = "subtract";
+
     final int[] previousProgress = {1};
     final int[] previousSize = {0};
 
+    @SuppressLint("DefaultLocale")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,9 +44,6 @@ public class MainActivity extends AppCompatActivity {
         // Initialize views
         initWidgets();
 
-        // Initialize pricing hashmaps
-        setPricing();
-
         // Initialize database handler
         dbHandler = new DBHandler(MainActivity.this);
         // Size dropdown listener
@@ -87,39 +51,158 @@ public class MainActivity extends AppCompatActivity {
 
         // Flavor dropdown listener
         onFlavorDropdownSelect();
+    }
 
-        // Initialize price
-        total = 0.15f;
-        priceText.setText(String.format("%s $%.2f", getString(R.string.price_label), total));
+    /**
+     * Enum for storing size prices
+     */
+    public enum Size {
+        SMALL(2.99f),
+        MEDIUM(3.99f),
+        LARGE(4.99f);
+
+        private final float price;
+
+        Size(float price) {
+            this.price = price;
+        }
+
+        public float getPrice() {
+            return price;
+        }
+    }
+
+    /**
+     * Enum for storing hot fudge amount prices
+     * Throws an exception if no matching enum constant is found.
+     */
+    public enum HotFudge {
+        ZERO_OUNCES(0, 0.00f),
+        ONE_OUNCE(1, 0.50f),
+        TWO_OUNCES(2, 1.00f),
+        THREE_OUNCES(3, 1.50f);
+
+        private final int ounces;
+        private final float price;
+
+        HotFudge(int ounces, float price) {
+            this.ounces = ounces;
+            this.price = price;
+        }
+
+        public int getOunces() {
+            return ounces;
+        }
+
+        public float getPrice() {
+            return price;
+        }
+
+        // Get HotFudge enum based on selected ounce(s)
+        public static HotFudge fromOunces(int ounces) {
+            for (HotFudge fudgeAmount : HotFudge.values()) {
+                if (fudgeAmount.getOunces() == ounces) {
+                    return fudgeAmount;
+                }
+            }
+            // If no match is found, throw an exception
+            throw new IllegalArgumentException("No HotFudge enum constant with " + ounces + " ounces");
+        }
+    }
+
+    /**
+     * Enum for storing topping prices.
+     */
+    public enum Topping {
+        PEANUTS(0.15f),
+        M_AND_MS(0.25f),
+        ALMONDS(0.15f),
+        BROWNIE(0.20f),
+        STRAWBERRIES(0.20f),
+        OREOS(0.20f),
+        GUMMY_BEARS(0.20f),
+        MARSHMALLOWS(0.15f);
+
+        private final Float price;
+
+        Topping(Float price) {
+            this.price = price;
+        }
+
+        public Float getPrice() {
+            return price;
+        }
     }
 
     /**
      * Initializes widgets
      */
-    private void initWidgets()
-    {
-        // Fudge slider and listener
+    private void initWidgets() {
+        // Initialize Fudge slider and set listener
+        initFudgeSlider();
+
+        // Initialize flavor/size dropdowns
+        initFlavorDropdown();
+        initSizeDropdown();
+
+        // Initialize description text
+        description = findViewById(R.id.description);
+
+        // Initialize buttons
+        initButtons();
+
+        // Initialize toppings checkboxes and set listeners
+        initToppings();
+
+        // Initialize price
+        initPrice();
+    }
+
+    /**
+     * Initializes hot fudge slider and sets listener
+     */
+    private void initFudgeSlider() {
         fudgeAmount = findViewById(R.id.amount_fudge);
-        fudgeAmount.setProgress(1);
+        fudgeAmount.setProgress(HotFudge.ONE_OUNCE.ounces);
         fudgeAmount.setOnSeekBarChangeListener(onFudgeAmountChanged());
+
         fudgeProgressText = findViewById(R.id.fudge_progress_text);
         fudgeProgressText.setText(getString(R.string.progress_1oz));
-        // Flavor dropdown
+    }
+
+    /**
+     * Initializes flavor dropdown
+     */
+    private void initFlavorDropdown() {
         flavorDropdown = findViewById(R.id.flavor);
-        // Size dropdown
+    }
+
+    /**
+     * Initializes size dropdown
+     */
+    private void initSizeDropdown() {
         sizeDropdown = findViewById(R.id.size);
-        // Instructions for user
-        description = findViewById(R.id.description);
-        // Order button listener
+    }
+
+    /**
+     * Initializes buttons and sets respective listeners
+     */
+    private void initButtons() {
+        // Order button
         orderButton = findViewById(R.id.order);
         orderButton.setOnClickListener(this::onOrderClick);
-        // The Works button listener
+        // The Works! button
         theWorksButton = findViewById(R.id.the_works);
         theWorksButton.setOnClickListener(this::onTheWorksClick);
-        // Reset button listener
+        // Reset button
         resetButton = findViewById(R.id.reset);
         resetButton.setOnClickListener(this::onResetClick);
-        // Toppings checkboxes
+    }
+
+    /**
+     * Initializes toppings and set listener
+     */
+    private void initToppings() {
         peanuts = findViewById(R.id.peanuts);
         mAndMs = findViewById(R.id.m_and_ms);
         almonds = findViewById(R.id.almonds);
@@ -128,50 +211,22 @@ public class MainActivity extends AppCompatActivity {
         oreos = findViewById(R.id.oreos);
         gummyBears = findViewById(R.id.gummy_bears);
         marshmallows = findViewById(R.id.marshmallows);
-        // Toppings onclick listener
-        toppings = new CheckBox[]{peanuts, mAndMs, almonds, brownie,
-                strawberries, oreos, gummyBears, marshmallows
-        };
-        peanuts.setOnCheckedChangeListener(this::onCheckboxChecked);
-        mAndMs.setOnCheckedChangeListener(this::onCheckboxChecked);
-        almonds.setOnCheckedChangeListener(this::onCheckboxChecked);
-        brownie.setOnCheckedChangeListener(this::onCheckboxChecked);
-        strawberries.setOnCheckedChangeListener(this::onCheckboxChecked);
-        oreos.setOnCheckedChangeListener(this::onCheckboxChecked);
-        gummyBears.setOnCheckedChangeListener(this::onCheckboxChecked);
-        marshmallows.setOnCheckedChangeListener(this::onCheckboxChecked);
-        // Price text
-        priceText = findViewById(R.id.price_label_text);
+
+        // Toppings listener is prettier in a loop
+        toppings = new CheckBox[]{peanuts, mAndMs, almonds, brownie, strawberries, oreos, gummyBears, marshmallows};
+        for (CheckBox topping : toppings) {
+            topping.setOnCheckedChangeListener(this::onCheckboxChecked);
+        }
     }
 
-
     /**
-     * Initializes the pricing hashmaps.
+     * Initializes total price with default 1 oz hot fudge set
      */
-    private void setPricing() {
-        // sizePrices map
-        sizePrices = new HashMap<>();
-        sizePrices.put(small, smallPrice);
-        sizePrices.put(medium, mediumPrice);
-        sizePrices.put(large, largePrice);
-
-        // toppingPrices map
-        toppingPrices = new HashMap<>();
-        toppingPrices.put(peanutsTopping, peanutPrice);
-        toppingPrices.put(mAndMsTopping, mAndMsPrice);
-        toppingPrices.put(almondsTopping, almondsPrice);
-        toppingPrices.put(brownieTopping, browniePrice);
-        toppingPrices.put(strawberriesTopping, strawberriesPrice);
-        toppingPrices.put(oreosTopping, oreosPrice);
-        toppingPrices.put(gummyBearsTopping, gummyBearsPrice);
-        toppingPrices.put(marshmallowsTopping, marshmallowsPrice);
-
-        // hotFudgePrices map
-        hotFudgePrices = new HashMap<>();
-        hotFudgePrices.put(zeroOunce, hotFudgePriceZeroOunce);
-        hotFudgePrices.put(oneOunce, hotFudgePriceOneOunce);
-        hotFudgePrices.put(twoOunces, hotFudgePriceTwoOunces);
-        hotFudgePrices.put(threeOunces, hotFudgePriceThreeOunces);
+    @SuppressLint("DefaultLocale")
+    protected void initPrice() {
+        total = HotFudge.ONE_OUNCE.getPrice();
+        priceText = findViewById(R.id.price_label_text);
+        priceText.setText(String.format("%s $%.2f", getString(R.string.price_label), total));
     }
 
     /**
@@ -179,15 +234,18 @@ public class MainActivity extends AppCompatActivity {
      *
      * @param v The view that was clicked.
      */
-    private void onResetClick(View v) {
+    protected void onResetClick(View v) {
+        // Reset fudge amount to 1 oz & update corresponding text
         fudgeProgressText.setText(String.format("%s", getString(R.string.progress_1oz)));
-        fudgeAmount.setProgress(1);
-        sizeDropdown.setSelection(0);
+        fudgeAmount.setProgress(HotFudge.ONE_OUNCE.ounces);
+        // Reset size to small
+        sizeDropdown.setSelection(Size.SMALL.ordinal());
+        // Reset flavor to vanilla
         flavorDropdown.setSelection(0);
         for (CheckBox topping : toppings) {
             this.toggleCheckbox(false, topping);
         }
-    };
+    }
 
     /**
      * Toggles the checked state of a checkbox.
@@ -204,16 +262,25 @@ public class MainActivity extends AppCompatActivity {
      *
      * @param topping The checkbox that was checked or unchecked.
      * @param checked The new checked state of the checkbox.
+     *
+     * Throws exception if no matching enum constant is found.
      */
-    private void onCheckboxChecked(CompoundButton topping, boolean checked) {
+    protected void onCheckboxChecked(CompoundButton topping, boolean checked) {
         int toppingID = topping.getId();
+        String toppingResourceName = getResources().getResourceEntryName(toppingID).toUpperCase();
 
-        String toppingResourceName = getResources().getResourceEntryName(toppingID).toLowerCase();
-        Float price = toppingPrices.get(toppingResourceName);
-        if (topping.isChecked()) {
-            calculatePrice(price, addAction);
-        } else {
-            calculatePrice(price, subtractAction);
+        try {
+            Topping selectedTopping = Topping.valueOf(toppingResourceName);
+            Float price = selectedTopping.getPrice();
+            // If the checkbox is checked, add the topping price to the total, else subtract it
+            if (checked) {
+                calculatePrice(price, addAction);
+            } else {
+                calculatePrice(price, subtractAction);
+            }
+        } catch (IllegalArgumentException e) {
+            // Throw exception if no matching topping is found
+            throw new IllegalArgumentException("No topping enum constant for " + toppingResourceName);
         }
     }
 
@@ -223,6 +290,7 @@ public class MainActivity extends AppCompatActivity {
      * @param priceChange The change in price.
      * @param action The action to be performed.
      */
+    @SuppressLint("DefaultLocale")
     private void calculatePrice(Float priceChange, String action) {
         if (action.equals(addAction)) {
             total += priceChange;
@@ -240,30 +308,33 @@ public class MainActivity extends AppCompatActivity {
      * @param v The view that was clicked.
      */
     private void onTheWorksClick(View v) {
-        fudgeAmount.setProgress(3);
-        sizeDropdown.setSelection(2);
+        fudgeAmount.setProgress(HotFudge.THREE_OUNCES.ounces);
+        sizeDropdown.setSelection(Size.LARGE.ordinal());
         flavorDropdown.setSelection(0);
         for (CheckBox topping : toppings) {
             this.toggleCheckbox(true, topping);
         }
-    };
+    }
 
     /**
      * Handles changes in the fudge amount.
      *
      * @return {@link SeekBar.OnSeekBarChangeListener}
      */
-    private SeekBar.OnSeekBarChangeListener onFudgeAmountChanged() {
+    protected SeekBar.OnSeekBarChangeListener onFudgeAmountChanged() {
         return new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                fudgeProgressText.setText(String.format("%s %s", valueOf(progress), getString(R.string.oz)));
-                Float fudgePrice = hotFudgePrices.get(valueOf(progress));
+                fudgeProgressText.setText(String.format("%s %s", progress, getString(R.string.oz)));
+                HotFudge selectedFudge = HotFudge.fromOunces(progress);
+                float fudgePrice = selectedFudge.getPrice();
                 calculatePrice(fudgePrice, addAction);
+
                 // Subtract previous selected progress price
                 if (previousProgress[0] != progress) {
-                    Float previousProgressAmount = hotFudgePrices.get(valueOf(previousProgress[0]));
-                    calculatePrice(previousProgressAmount, subtractAction);
+                    HotFudge previousFudge = HotFudge.fromOunces(previousProgress[0]);
+                    float previousFudgePrice = previousFudge.getPrice();
+                    calculatePrice(previousFudgePrice, subtractAction);
                 }
 
                 // Set previousProgress to current
@@ -279,24 +350,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Size dropdown handler
+     * Size dropdown handler. Increments/decrements total price based on selected size.
      */
     private void onSizeDropdownSelect() {
         sizeDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedSize = parent.getItemAtPosition(position).toString().toLowerCase();
-                Float sizePrice = sizePrices.get(selectedSize);
+                String selectedSizeText = parent.getItemAtPosition(position).toString().toUpperCase();
+                Size selectedSize = Size.valueOf(selectedSizeText);
+                float sizePrice = selectedSize.getPrice();
                 calculatePrice(sizePrice, addAction);
+
                 // Subtract previous size price
-                int prev = previousSize[0];
-                if (prev != position) {
-                    String previousSizeText = parent.getItemAtPosition(previousSize[0]).toString().toLowerCase();
-                    Float previousSizeAmount = sizePrices.get(previousSizeText);
-                    calculatePrice(previousSizeAmount, subtractAction);
+                int prevSizePosition = previousSize[0];
+                if (prevSizePosition != position) {
+                    String previousSizeText = parent.getItemAtPosition(prevSizePosition).toString().toUpperCase();
+                    Size previousSizeEnum = Size.valueOf(previousSizeText);
+                    float previousSizePrice = previousSizeEnum.getPrice();
+                    calculatePrice(previousSizePrice, subtractAction);
                 }
 
-                // Set previousSize to current
+                // Set prevSize to current position
                 previousSize[0] = position;
             }
 
@@ -358,7 +432,6 @@ public class MainActivity extends AppCompatActivity {
             return true;
         } else if (id == R.id.order_history) {
             Intent intent = new Intent(MainActivity.this, OrderHistoryActivity.class);
-
             startActivity(intent);
             return true;
         }
@@ -370,21 +443,15 @@ public class MainActivity extends AppCompatActivity {
      *
      * @param v The view that was clicked.
      */
-    private void onOrderClick(View v) {
+    protected void onOrderClick(View v) {
         // Get the selected values from the order form
         String orderSize = sizeDropdown.getSelectedItem().toString();
         String orderFlavor = flavorDropdown.getSelectedItem().toString();
         String orderFudge = fudgeProgressText.getText().toString();
-        String orderPrice = String.format("$%.2f", total);
+        @SuppressLint("DefaultLocale") String orderPrice = String.format("$%.2f", total);
 
         // Validate size and flavor inputs
-        if (orderSize.isEmpty()) {
-            Toast.makeText(MainActivity.this, getString(R.string.please_enter_a_size), Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (orderFlavor.isEmpty()) {
-            Toast.makeText(MainActivity.this, getString(R.string.please_enter_a_flavor), Toast.LENGTH_SHORT).show();
+        if (!validateSpinners(orderSize, orderFlavor)) {
             return;
         }
 
@@ -394,5 +461,47 @@ public class MainActivity extends AppCompatActivity {
         // Reset the form
         Toast.makeText(MainActivity.this, getString(R.string.order_successfully_placed), Toast.LENGTH_SHORT).show();
         this.onResetClick(v);
+    }
+
+    /**
+     * Validates the size and flavor inputs as well as the price. Provides a warning to the user
+     * and prevents the order from being placed if the inputs are invalid. Provides light safeguard
+     * against SQL injection.
+     *
+     * @param orderSize The selected size.
+     * @param orderFlavor The selected flavor.
+     *
+     * @return {@code true} if the inputs are valid, {@code false} otherwise.
+     */
+    private boolean validateSpinners(String orderSize, String orderFlavor) {
+        boolean isValidSize = false;
+        if (orderSize.isEmpty()) {
+            Toast.makeText(MainActivity.this, getString(R.string.please_enter_a_size), Toast.LENGTH_SHORT).show();
+        }
+        String[] sizes = getResources().getStringArray(R.array.size_names);
+        for (String size : sizes) {
+            if (size.equalsIgnoreCase(orderSize)) {
+                isValidSize = true;
+                break;
+            }
+        }
+        String[] flavors = getResources().getStringArray(R.array.flavor_names);
+        boolean isValidFlavor = false;
+        if (orderFlavor.isEmpty()) {
+            Toast.makeText(MainActivity.this, getString(R.string.please_enter_a_flavor), Toast.LENGTH_SHORT).show();
+        }
+        for (String flavor : flavors) {
+            if (flavor.equalsIgnoreCase(orderFlavor)) {
+                isValidFlavor = true;
+                break;
+            }
+        }
+        boolean isValidPrice = false;
+        if (total >= Size.SMALL.getPrice()) {
+            isValidPrice = true;
+        } else {
+            Toast.makeText(MainActivity.this, getString(R.string.please_make_selection), Toast.LENGTH_SHORT).show();
+        }
+        return isValidSize && isValidFlavor && isValidPrice;
     }
 }

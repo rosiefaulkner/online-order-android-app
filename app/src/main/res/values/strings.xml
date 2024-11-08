@@ -45,4 +45,5 @@
     <string name="size_label">Size:&#160;</string>
     <string name="toppings_label">Toppings:&#160;</string>
     <string name="fudge_label">Fudge:&#160;</string>
+    <string name="please_make_selection">Please make a selection.</string>
 </resources>

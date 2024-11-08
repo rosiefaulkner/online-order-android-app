@@ -2,23 +2,18 @@ package com.sundae.onlinesundaeshop;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class OrderModel extends AppCompatActivity {
-    private String size;
+    private final String size;
     private String flavor;
-    private String fudge;
-    private String createdAt;
-    private String price;
-    private int id;
+    private final String fudge;
+    private final String createdAt;
+    private final String price;
+    private final int id;
 
 
     /**
      * Getters for the order history model
      */
     public String getSize() { return size; }
-
-    public void setSize(String size)
-    {
-        this.size = size;
-    }
 
     public String getFlavor()
     {
@@ -32,28 +27,14 @@ public class OrderModel extends AppCompatActivity {
 
     public String getFudge() { return fudge; }
 
-    public void setFudge(String fudge)
-    {
-        this.fudge = fudge;
-    }
-
     public String getCreatedAt()
     {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt)
-    {
-        this.createdAt = createdAt;
-    }
-
     public Integer getId() { return id; }
 
-    public void setId(int id) { this.id = id; }
-
     public String getPrice() { return price; }
-
-    public void setPrice(String price) { this.price = price; }
 
     /**
      * Constructor for the order history model

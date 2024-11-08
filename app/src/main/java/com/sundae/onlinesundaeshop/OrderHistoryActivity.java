@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/** @noinspection resource*/
 public class OrderHistoryActivity extends AppCompatActivity {
     TextView orderHistoryTextView;
     ListView listView;
@@ -32,10 +33,11 @@ public class OrderHistoryActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        // Initialize order page UI elements / widgets
         initWidgets();
 
         // initialize variables
-        ArrayList<OrderModel> orderModalArrayList = new ArrayList<>();
+        ArrayList<OrderModel> orderModalArrayList;
         DBHandler dbHandler = new DBHandler(this);
 
         // Get orders list from db handler
@@ -47,8 +49,8 @@ public class OrderHistoryActivity extends AppCompatActivity {
         }
 
         List<String> result = extractStrings(orderModalArrayList);
-        listView = (ListView) findViewById(R.id.order_history_list_body);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, result);
+        listView = findViewById(R.id.order_history_list_body);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, result);
         listView.setAdapter(adapter);
     }
 
@@ -82,27 +84,26 @@ public class OrderHistoryActivity extends AppCompatActivity {
                     order.getId().toString() +
                     getString(R.string.order_history_item_title_ending);
 
-            StringBuilder orderDetails = new StringBuilder();
-            orderDetails.append("\n")
-                    .append(orderTitle)
-                    .append("\n")
-                    .append(getString(R.string.size_label))
-                    .append(order.getSize())
-                    .append("\n")
-                    .append(getString(R.string.flavor_label))
-                    .append(order.getFlavor())
-                    .append("\n")
-                    .append(getString(R.string.fudge_label))
-                    .append(order.getFudge())
-                    .append("\n")
-                    .append(getString(R.string.date_label))
-                    .append(convertToReadableDate(order.getCreatedAt()))
-                    .append("\n")
-                    .append(getString(R.string.price_label))
-                    .append(order.getPrice())
-                    .append("\n");
+            String orderDetails = "\n" +
+                    orderTitle +
+                    "\n" +
+                    getString(R.string.size_label) +
+                    order.getSize() +
+                    "\n" +
+                    getString(R.string.flavor_label) +
+                    order.getFlavor() +
+                    "\n" +
+                    getString(R.string.fudge_label) +
+                    order.getFudge() +
+                    "\n" +
+                    getString(R.string.date_label) +
+                    convertToReadableDate(order.getCreatedAt()) +
+                    "\n" +
+                    getString(R.string.price_label) +
+                    order.getPrice() +
+                    "\n";
 
-            extractedStrings.add(orderDetails.toString());
+            extractedStrings.add(orderDetails);
         }
 
         return extractedStrings;

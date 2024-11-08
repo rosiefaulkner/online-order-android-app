@@ -13,7 +13,7 @@ public class DBHandler extends SQLiteOpenHelper {
 
     private static final int DB_VERSION = 1;
 
-    private static final String TABLE_NAME = "orders";
+    static final String TABLE_NAME = "orders";
 
     private static final String ID_COL = "id";
 
@@ -27,7 +27,10 @@ public class DBHandler extends SQLiteOpenHelper {
 
     private static final String PRICE_COL = "price";
 
-    // Constructor
+    /**
+     * Constructor
+     *
+     */
     public DBHandler(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
@@ -37,7 +40,7 @@ public class DBHandler extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // Set column names and schema
+        // Set column names and schema in new table
         String query = "CREATE TABLE " + TABLE_NAME + " ("
                 + ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + SIZE_COL + " TEXT,"
@@ -57,18 +60,13 @@ public class DBHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-
-        // Pass values to content values
         values.put(SIZE_COL, orderSize);
         values.put(FLAVOR_COL, orderFlavor);
         values.put(FUDGE_COL, orderFudge);
         values.put(CREATED_AT_COL, System.currentTimeMillis());
         values.put(PRICE_COL, orderPrice);
 
-        // Pass content values to DB table
         db.insert(TABLE_NAME, null, values);
-
-        // Close DB connection
         db.close();
     }
 
@@ -77,18 +75,15 @@ public class DBHandler extends SQLiteOpenHelper {
      */
     public ArrayList<OrderModel> readOrders()
     {
-        // Open DB for reading
+        // Get readable instance of DB
         SQLiteDatabase db = this.getReadableDatabase();
 
-        // Create cursor to read DB
         Cursor cursorOrders
                 = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
 
-        // New array list
         ArrayList<OrderModel> orderModelArrayList
                 = new ArrayList<>();
 
-        // Move cursor to first order
         if (cursorOrders.moveToFirst()) {
             do {
                 // Add cursor data to list
@@ -100,9 +95,8 @@ public class DBHandler extends SQLiteOpenHelper {
                         cursorOrders.getString(4),
                         cursorOrders.getString(5)));
             } while (cursorOrders.moveToNext());
-            // Move cursor to next order.
+            // Add next order to list
         }
-        // Close cursor and return array list of orders
         cursorOrders.close();
         return orderModelArrayList;
     }
@@ -112,7 +106,7 @@ public class DBHandler extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Check if the table already exists
+        // Drop table if it exists
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(db);
     }
