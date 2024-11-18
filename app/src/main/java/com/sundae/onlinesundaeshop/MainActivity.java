@@ -78,9 +78,9 @@ public class MainActivity extends AppCompatActivity {
      */
     public enum HotFudge {
         ZERO_OUNCES(0, 0.00f),
-        ONE_OUNCE(1, 0.50f),
-        TWO_OUNCES(2, 1.00f),
-        THREE_OUNCES(3, 1.50f);
+        ONE_OUNCE(1, 0.15f),
+        TWO_OUNCES(2, 0.25f),
+        THREE_OUNCES(3, 0.30f);
 
         private final int ounces;
         private final float price;
